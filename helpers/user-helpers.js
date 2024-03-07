@@ -1,38 +1,45 @@
+const db = require('../config/connection');
+const collection = require('../config/collections');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; // Number of salt rounds to use
 
-var db=require('../config/connection')
-var collection=require('../config/collections')
-const bcrypt=require('bcrypt');
+module.exports = {
 
-module.exports={
-    doSignup:(userData)=>{
-        return new Promise(async (resolve,reject)=>{
-            userData.Password=await bcrypt.hash(userData.Password,10)
-            console.log(userData)
-            db.get().collection(collection.USER_COLLECTION).insertOne(userData)
-            .then((data)=>{
-                resolve(data.ops[0])
-            })
-        })
-    }
-}
-
-
-// const db = require('../config/connection');
-// const collection = require('../config/collections');
-// const bcrypt = require('bcrypt');
-
-// module.exports = {
-//     doSignup: async (userData) => {
-//         try {
-//             if (!userData.Password) {
-//                 throw new Error('Password is missing');
-//             }
+    doSignup: async (userData) => {
+        try {
             
-//             userData.Password = await bcrypt.hash(userData.Password, 10);
-//             const result = await db.get().collection(collection.USER_COLLECTION).insertOne(userData);
-//             return result.ops[0];
-//         } catch (error) {
-//             throw error;
-//         }
-//     }
-// };
+            // Check if userData.Password is provided and not empty
+            if (!userData.Password || userData.Password.trim() === '') {
+                throw new Error('Password is required');
+            }
+    
+            // Generate a salt value using the number of salt rounds
+            const salt = await bcrypt.genSalt(saltRounds);
+    
+            // Hash the password using the generated salt value
+            const hashedPassword = await bcrypt.hash(userData.Password, salt);
+    
+            // Update the user data with the hashed password
+            userData.Password = hashedPassword;
+    
+            // Insert the user data into the database
+            const insertedUser = await db.get().collection(collection.USER_COLLECTION).insertOne(userData);
+            console.log(insertedUser.insertedId); // Log the ID of the inserted user
+            return insertedUser.insertedId;
+        } catch (error) {
+            console.error(error);
+            throw error; // Rethrow the error for handling elsewhere if needed
+        }
+    },
+    
+        insertUser: async (userData) => {
+            try {
+                const result = await db.get().collection(collection.USER_COLLECTION).insertOne(userData);
+                return result.insertedId;
+            } catch (error) {
+                console.error(error);
+                throw error; // Rethrow the error for handling elsewhere if needed
+            }
+        }
+    };
+   
