@@ -3,43 +3,42 @@ const collection = require('../config/collections');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // Number of salt rounds to use
 
-module.exports = {
-
-    doSignup: async (userData) => {
-        try {
-            
-            // Check if userData.Password is provided and not empty
-            if (!userData.Password || userData.Password.trim() === '') {
-                throw new Error('Password is required');
-            }
-    
-            // Generate a salt value using the number of salt rounds
-            const salt = await bcrypt.genSalt(saltRounds);
-    
-            // Hash the password using the generated salt value
-            const hashedPassword = await bcrypt.hash(userData.Password, salt);
-    
-            // Update the user data with the hashed password
-            userData.Password = hashedPassword;
-    
-            // Insert the user data into the database
-            const insertedUser = await db.get().collection(collection.USER_COLLECTION).insertOne(userData);
-            console.log(insertedUser.insertedId); // Log the ID of the inserted user
-            return insertedUser.insertedId;
-        } catch (error) {
-            console.error(error);
-            throw error; // Rethrow the error for handling elsewhere if needed
-        }
+module.exports ={
+    doSignup : (userData)=>{
+        return new Promise(async(resolve,reject)=>{
+            userData.Password=await bcrypt.hash(userData.Password,saltRounds);
+            db.get().collection(collection.USER_COLLECTION).insertOne(userData)
+            .then((data)=>{
+                resolve(data.insertedId)
+            })
+        })
     },
+
     
-        insertUser: async (userData) => {
-            try {
-                const result = await db.get().collection(collection.USER_COLLECTION).insertOne(userData);
-                return result.insertedId;
-            } catch (error) {
-                console.error(error);
-                throw error; // Rethrow the error for handling elsewhere if needed
+    doLogin : (userData)=>{
+        return new Promise(async(resolve,reject)=>{
+            let loginStatus=false
+            let response={}
+
+            let user =await db.get().collection(collection.USER_COLLECTION).findOne({Email:userData.Email});
+
+            if(user){
+                bcrypt.compare(userData.Password,user.Password) .then((status)=>{
+                    if(status){
+                        console.log('login success');
+                        response.user=user
+                        response.status=true
+                        resolve(response)
+                    }else{
+                        console.log("login failed");
+                        resolve({status:false})
+                    }
+                })
+            }else{
+                console.log("login failed! user not exist.")
+                resolve({status:false})
             }
-        }
-    };
-   
+        })
+    }
+
+}
