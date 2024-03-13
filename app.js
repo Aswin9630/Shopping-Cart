@@ -3,6 +3,8 @@ var createError = require('http-errors');
 var express = require('express');
 var hbs = require('express-handlebars')
 const { create } = require('express-handlebars');
+const Handlebars = require('handlebars');
+Handlebars.allowProtoPropertiesByDefault = true;
 
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -25,6 +27,7 @@ const viewEngine= hbs.create({
   layoutsDir: __dirname + '/views/layout/',
   partialsDir: __dirname + '/views/partials'
 });
+
 
 app.engine('hbs', viewEngine.engine)
 app.set('view engine', 'hbs');
