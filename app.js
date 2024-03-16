@@ -4,7 +4,7 @@ var express = require('express');
 var hbs = require('express-handlebars')
 const { create } = require('express-handlebars');
 const Handlebars = require('handlebars');
-Handlebars.allowProtoPropertiesByDefault = true;
+
 
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -38,7 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload())
-app.use(session({secret:"key",resave:false,saveUninitialized:false,cookie:{maxAge:60000}}));
+app.use(session({secret:"key",resave:false,saveUninitialized:false,cookie:{maxAge:600000}}));
 
 dbConnection.connect((err)=>{
   if(!err){

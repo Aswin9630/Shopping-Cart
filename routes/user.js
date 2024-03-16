@@ -43,7 +43,11 @@ router.get('/signup',(req,res)=>{
 router.post('/signup',(req,res)=>{
  userHelpers.doSignup(req.body).then((response)=>{
   console.log(response)
-  res.render('user/login')
+  
+    req.session.loggedIn=true;
+    req.session.user=response;
+    res.render('user/login')
+  
  })
  .catch((error) => {
   console.error(error);
