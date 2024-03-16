@@ -17,7 +17,6 @@ router.get('/', function(req, res, next) {
 
   let user=req.session.user
   console.log(user);
-
   productHelpers.getAllProducts().then((products)=>{
     res.render('user/view-products',{products,user})
 
@@ -33,6 +32,7 @@ router.get('/login',(req,res)=>{
   }
  
 });
+
 
 router.get('/signup',(req,res)=>{
   res.render('user/signup')
@@ -56,6 +56,7 @@ router.post('/signup',(req,res)=>{
 
 })
 
+
 router.post('/login',(req,res)=>{
   userHelpers.doLogin(req.body).then((response)=>{
     if(response.status){
@@ -69,6 +70,7 @@ router.post('/login',(req,res)=>{
   })
   
 })
+
 
 router.get('/logout',(req,res)=>{
   req.session.destroy()
