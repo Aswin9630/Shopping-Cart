@@ -8,7 +8,7 @@ module.exports.connect = done => {
   const dbname = 'shopping';
   const url = 'mongodb://localhost:27017/' + dbname;
   const client = new MongoClient(url);
-
+  
   client.connect()
       .then(() => {
           state.db = client.db(dbname);

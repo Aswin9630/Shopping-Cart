@@ -1,23 +1,38 @@
 
-var createError = require('http-errors');
-var express = require('express');
-var hbs = require('express-handlebars')
+const createError = require('http-errors');
+const express = require('express');
+const hbs = require('express-handlebars')
 const { create } = require('express-handlebars');
 const Handlebars = require('handlebars');
 
 
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var userRouter = require('./routes/user');
-var adminRouter = require('./routes/admin');
 
-var app = express();
-var fileUpload = require('express-fileupload');
-var session = require ("express-session");
+const userRouter = require('./routes/user');
+const adminRouter = require('./routes/admin');
 
-var dbConnection = require('./config/connection')
+const app = express();
+const fileUpload = require('express-fileupload');
+const session = require ("express-session");
+app.use(session(
+  {secret:"my-strong-secretkey",
+  resave:false,
+  saveUninitialized:true,
+  cookie:{maxAge:10*60*1000}}
+  ));
+
+  const dbConnection = require('./config/connection')
+  dbConnection.connect((err)=>{
+    if(!err){
+      console.log("Database connected to port 27017")
+      const connectdb =dbConnection.get();
+    }else{
+      console.log("error")
+    }
+  })
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 
@@ -33,21 +48,13 @@ app.engine('hbs', viewEngine.engine)
 app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(fileUpload())
-app.use(session({secret:"key",resave:false,saveUninitialized:false,cookie:{maxAge:600000}}));
 
-dbConnection.connect((err)=>{
-  if(!err){
-    console.log("Database connected to port 27017")
-    const connectdb =dbConnection.get();
-  }else{
-    console.log("error")
-  }
-})
+
 
 
 

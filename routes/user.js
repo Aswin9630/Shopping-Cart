@@ -24,6 +24,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/login',(req,res)=>{
+  console.log("req.session:", req.session);
   if(req.session.loggedIn){
     res.redirect('/')
   }else{
@@ -58,11 +59,14 @@ router.post('/signup',(req,res)=>{
 
 
 router.post('/login',(req,res)=>{
+  console.log("req.session:", req.session);
   userHelpers.doLogin(req.body).then((response)=>{
     if(response.status){
-      req.session.loggedIn=true;
+      console.log("req.session.user",req.session.user)
       req.session.user=response.user;
+      req.session.loggedIn=true;
       res.redirect('/')
+
     }else{
       req.session.loginErr="Invalid username or password";
       res.redirect('/login')
@@ -82,5 +86,24 @@ router.get('/cart',verifyLogin,(req,res)=>{
   res.render('user/cart')
 })
 
+router.get('/add-to-cart/:id',(req,res)=>{
+  console.log("add-to-cart req.session.user",req.session.user)
+  console.log("add-to-cart req.session",req.session)
+  if(req.session && req.session.user){
+
+    const userId=req.session.user._id;
+    const proId=req.params._id;
+    
+    console.log("userId",userId)
+    console.log("proId",proId)
+
+    userHelpers.addToCart(proId,userId).then(()=>{
+      res.redirect('/');
+    })
+
+  }else{
+    res.render('user/login')
+  }
+})
 
 module.exports = router;
