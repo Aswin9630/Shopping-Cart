@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const { ObjectId } = require('mongodb')
 const { response } = require('express');
 const { log } = require('handlebars');
+const { promise } = require('bcrypt/promises');
 const saltRounds = 10; // Number of salt rounds to use
 
 module.exports ={
@@ -71,6 +72,33 @@ module.exports ={
                     resolve()
                 })
             }
+        })
+    },
+
+    getCartProducts:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let cartItems=await db.get().collection(collection.CART_COLLECTION).aggregate([
+                {
+                    $match:{user:new ObjectId(userId)}
+                },
+                {
+                    $lookup:{
+                        from:collection.PRODUCT_COLLECTION,
+                        let:{prodList:'$products'},
+                        pipeline:[
+                            {
+                                $match:{
+                                    $expr:{
+                                        $in:['$_id','$$prodList']
+                                    }
+                                }
+                            }
+                        ],
+                        as:'cartItems'
+                    }
+                }
+            ]).toArray()
+            resolve(cartItems[0].cartItems)
         })
     }
 }

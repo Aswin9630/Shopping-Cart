@@ -82,7 +82,9 @@ router.get('/logout',(req,res)=>{
 })
 
 
-router.get('/cart',verifyLogin,(req,res)=>{
+router.get('/cart',verifyLogin,async(req,res)=>{
+  let products=await userHelpers.getCartProducts(req.session.user._id);
+  console.log(products)
   res.render('user/cart')
 })
 
@@ -92,8 +94,8 @@ router.get('/add-to-cart/:id',(req,res)=>{
   if(req.session && req.session.user){
 
     const userId=req.session.user._id;
-    const proId=req.params._id;
-    
+    const proId=req.params.id;
+
     console.log("userId",userId)
     console.log("proId",proId)
 
