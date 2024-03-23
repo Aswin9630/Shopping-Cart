@@ -4,7 +4,7 @@
                 aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#" style="font-weight: 900;">Shopping Cart</a>
+            <a class="navbar-brand" href="/" style="font-weight: 900;">Shopping Cart</a>
 
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -13,7 +13,7 @@
                     </li>
                     
                     <li class="nav-item">
-                        <a class="nav-link" href="/cart">Cart</a>
+                        <a class="nav-link" href="/cart">Cart<span class="badge badge-success">{{cartCount}}</span></a>
                     </li>
                     
                     {{#if user}}
