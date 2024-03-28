@@ -4,6 +4,12 @@ const express = require('express');
 const hbs = require('express-handlebars')
 const { create } = require('express-handlebars');
 const Handlebars = require('handlebars');
+// Define a custom Handlebars helper to increment the index by 1
+Handlebars.registerHelper('indexInc', function(index) {
+  // Increment index by 1
+  return index + 1;
+});
+
 
 
 const path = require('path');

@@ -57,7 +57,9 @@ module.exports ={
                 console.log("if case")
                 db.get().collection(collection.CART_COLLECTION)
                     .updateOne({ user:UserId }, {
+
                         $push: { "products":ProId}
+                        
                     }).then((response) => {
                         resolve()
                     })
